@@ -28,7 +28,7 @@ class PredicatesConstructionService:
         path: tuple[str]
     ):
         if len(path) == 1:
-            return dictionary[path[0]]
+            return dictionary[path[0]] if path[0] in dictionary else []
         else:
             return self._get_predicates_by_path(
                 dictionary[path[0]], path[1:]

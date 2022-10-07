@@ -1,38 +1,23 @@
 import re
 import toml
 
-import predicates
+from config import Config
+from predicates_construction_service import PredicatesConstructionService
 
 CONFIG_FILE = 'config.toml'
 
 class ConfigService:
-    config = None
-    _default_config = {
-        'interval': '1s',
-        'predicates': {
-            'by-name': {
-                'verbatim': [],
-                'regex-patterns': [],
-                'glob-patterns': []
-            }
-        },
-        'ignores': {
-            'by-name': {
-                'verbatim': [],
-                'regex-patterns': [],
-                'glob-patterns': []
-            }
-        }
-    }
+    config = Config()
+    _raw_config = None
 
     def __init__(self):
-        self.config = self._read_config()
-        self._set_defaults()
+        self._raw_config = self._read_config()
+        self._predicate_construction_service = PredicatesConstructionService()
+
         self._validate_config()
         self._parse_interval()
-
-    def get_interval(self):
-        return self._parsed_interval
+        self._construct_predicates()
+        self._construct_ignores()
 
     def _read_config(self):
         try:
@@ -40,39 +25,18 @@ class ConfigService:
         except FileNotFoundError as ex:
             raise RuntimeError(f'Config file {CONFIG_FILE} not found') from ex
 
-    def _set_defaults(self):
-        self._set_defaults_recursive(self.config, ())
-
-    def _set_defaults_recursive(self, dictionary, keys):
-        self._set_defaults_to_dict(keys)
-
-        for k, v in dictionary.items():
-            if isinstance(v, dict):
-                self._set_defaults_recursive(v, keys + (k,))
-
-    def _set_defaults_to_dict(self, keys):
-        defaults = self._default_config
-        config = self.config
-
-        for key in keys:
-            defaults = defaults[key]
-            config = config[key]
-        
-        for k, v in defaults.items():
-            config.setdefault(k, v)
-
     def _validate_config(self):
         self._validate_interval()
 
     def _validate_interval(self):
-        interval = self.config['interval']
+        interval = self._raw_config['interval']
         regex = r'([0-9.]+s)?([0-9.]+m)?([0-9.]+h)?'
 
         if re.fullmatch(regex, interval) is None:
             raise ValueError(f'Invalid interval: {interval}')
 
     def _parse_interval(self):
-        interval_str = self.config['interval']
+        interval_str = self._raw_config['interval']
 
         seconds = self._parse_interval_component(interval_str, 's')
         minutes = self._parse_interval_component(interval_str, 'm')
@@ -81,10 +45,20 @@ class ConfigService:
         minutes += hours * 60
         seconds += minutes * 60
 
-        self._parsed_interval = seconds
+        self.config.interval = seconds
 
 
     def _parse_interval_component(self, interval_str, component):
         match = re.search(rf'([0-9.]+){component}', interval_str)
 
         return float(match.group(1)) if match is not None else 0.
+
+    def _construct_predicates(self):
+        service = self._predicate_construction_service
+        self.config.predicates = \
+            service.construct_predicates(self._raw_config['predicates'])
+
+    def _construct_ignores(self):
+        service = self._predicate_construction_service
+        self.config.ignores = \
+            service.construct_ignores(self._raw_config['ignores'])

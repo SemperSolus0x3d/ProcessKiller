@@ -2,7 +2,7 @@ import re
 from fnmatch import fnmatch
 from psutil import Process
 
-class ByNamePredicate:
+class ByNamePredicateMixin:
     def __init__(self, name):
         self._name = name
 
@@ -12,19 +12,19 @@ class ByNamePredicate:
     def _get_value(self, process: Process):
         return process.name()
 
-class VerbatimPredicate:
+class VerbatimPredicateMixin:
     def match(self, process: Process):
         value = self._get_value(process)
         pred_value = self._get_predicate_value()
         return value == pred_value
 
-class RegexPredicate:
+class RegexPredicateMixin:
     def match(self, process: Process):
         value = self._get_value(process)
         pred_value = self._get_predicate_value()
         return re.fullmatch(pred_value, value) is not None
 
-class GlobPatternPredicate:
+class GlobPatternPredicateMixin:
     def match(self, process: Process):
         value = self._get_value(process)
         pred_value = self._get_predicate_value()

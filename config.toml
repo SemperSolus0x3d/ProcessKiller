@@ -1,4 +1,5 @@
-interval = '1s'
+# String in format 1s2m3h
+interval = '1s' # 1 second
 
 [predicates]
 
@@ -7,5 +8,12 @@ verbatim = [
     'MicrosoftEdgeUpdate.exe',
     'GoogleUpdate.exe'
 ]
+regex-patterns = []
+glob-patterns = []
+
+[ignores]
+
+[ignores.by-name]
+verbatim = []
 regex-patterns = []
 glob-patterns = []

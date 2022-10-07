@@ -15,6 +15,13 @@ class ConfigService:
                 'regex-patterns': [],
                 'glob-patterns': []
             }
+        },
+        'ignores': {
+            'by-name': {
+                'verbatim': [],
+                'regex-patterns': [],
+                'glob-patterns': []
+            }
         }
     }
 
@@ -26,35 +33,6 @@ class ConfigService:
 
     def get_interval(self):
         return self._parsed_interval
-
-    def get_predicates(self):
-        result = []
-
-        type_by_path = {
-            ('by-name', 'verbatim'): predicates.VerbatimByNamePredicate,
-            ('by-name', 'regex-patterns'): predicates.RegexByNamePredicate,
-            ('by-name', 'glob-patterns'): predicates.GlobByNamePredicate
-        }
-
-        predicates_dict = self.config['predicates']
-
-        for path, type in type_by_path.items():
-            for pred in self._get_predicates_by_path(predicates_dict, path):
-                result.append(type(pred))
-
-        return result
-
-    def _get_predicates_by_path(
-        self,
-        dictionary,
-        path: tuple[str]
-    ):
-        if len(path) == 1:
-            return dictionary[path[0]]
-        else:
-            return self._get_predicates_by_path(
-                dictionary[path[0]], path[1:]
-            )
 
     def _read_config(self):
         try:
@@ -88,7 +66,7 @@ class ConfigService:
 
     def _validate_interval(self):
         interval = self.config['interval']
-        regex = r'([0-9]+s)?([0-9]+m)?([0-9]+h)?'
+        regex = r'([0-9.]+s)?([0-9.]+m)?([0-9.]+h)?'
 
         if re.fullmatch(regex, interval) is None:
             raise ValueError(f'Invalid interval: {interval}')

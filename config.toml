@@ -1,0 +1,11 @@
+interval = '1s'
+
+[predicates]
+
+[predicates.by-name]
+verbatim = [
+    'MicrosoftEdgeUpdate.exe',
+    'GoogleUpdate.exe'
+]
+regex-patterns = []
+glob-patterns = []

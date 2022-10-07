@@ -12,6 +12,19 @@ class ByNamePredicateMixin:
     def _get_value(self, process: Process):
         return process.name()
 
+class ByCmdLinePredicateMixin:
+    def __init__(self, cmd):
+        self._cmd = cmd
+
+    def _get_predicate_value(self):
+        return self._cmd
+
+    def _get_value(self, process: Process):
+        return ' '.join(map(self._quote_str, process.cmdline()))
+
+    def _quote_str(self, string):
+        return f'"{string}"'
+
 class VerbatimPredicateMixin:
     def match(self, process: Process):
         value = self._get_value(process)

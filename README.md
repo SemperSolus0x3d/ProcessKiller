@@ -13,7 +13,7 @@ ProcessKiller is configured via `config.toml` file. A [config example](config.to
 
 ## Known limitations
 
-Currently, only by-name predicates are supported, but other predicates support can be added as needed
+Currently, only by-name and by-commandline predicates are supported, but other predicates support can be added as needed
 
 ## Requirements
 

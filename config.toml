@@ -11,9 +11,19 @@ verbatim = [
 regex-patterns = []
 glob-patterns = []
 
+[predicates.by-cmd-line]
+verbatim = []
+regex-patterns = []
+glob-patterns = []
+
 [ignores]
 
 [ignores.by-name]
+verbatim = []
+regex-patterns = []
+glob-patterns = []
+
+[ignores.by-cmd-line]
 verbatim = []
 regex-patterns = []
 glob-patterns = []

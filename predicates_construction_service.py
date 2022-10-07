@@ -1,12 +1,6 @@
 import predicates
 
 class PredicatesConstructionService:
-    _predicate_type_by_path = {
-        ('by-name', 'verbatim'): predicates.VerbatimByNamePredicate,
-        ('by-name', 'regex-patterns'): predicates.RegexByNamePredicate,
-        ('by-name', 'glob-patterns'): predicates.GlobByNamePredicate
-    }
-
     def construct_predicates(self, predicates_dict):
         return self._do_construct_predicates(predicates_dict)
 
@@ -16,7 +10,7 @@ class PredicatesConstructionService:
     def _do_construct_predicates(self, predicates_dict):
         result = []
 
-        for path, type in self._predicate_type_by_path.items():
+        for path, type in predicates.PREDICATE_TYPE_BY_PATH.items():
             for pred in self._get_predicates_by_path(predicates_dict, path):
                 result.append(type(pred))
 

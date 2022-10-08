@@ -4,7 +4,7 @@ from psutil import Process
 
 class ByNamePredicateMixin:
     def __init__(self, name):
-        self._name = name
+        self._name = self._init_predicate_value(name)
 
     def _get_predicate_value(self):
         return self._name
@@ -14,7 +14,7 @@ class ByNamePredicateMixin:
 
 class ByCmdLinePredicateMixin:
     def __init__(self, cmd):
-        self._cmd = cmd
+        self._cmd = self._init_predicate_value(cmd)
 
     def _get_predicate_value(self):
         return self._cmd
@@ -31,14 +31,23 @@ class VerbatimPredicateMixin:
         pred_value = self._get_predicate_value()
         return value == pred_value
 
+    def _init_predicate_value(self, value):
+        return value
+
 class RegexPredicateMixin:
     def match(self, process: Process):
         value = self._get_value(process)
-        pred_value = self._get_predicate_value()
-        return re.fullmatch(pred_value, value) is not None
+        regex = self._get_predicate_value()
+        return regex.fullmatch(value) is not None
+
+    def _init_predicate_value(self, value):
+        return re.compile(value)
 
 class GlobPatternPredicateMixin:
     def match(self, process: Process):
         value = self._get_value(process)
         pred_value = self._get_predicate_value()
         return fnmatch(value, pred_value)
+
+    def _init_predicate_value(self, value):
+        return value

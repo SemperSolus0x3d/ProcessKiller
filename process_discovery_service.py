@@ -1,16 +1,15 @@
 import psutil
-import re
-from contextlib import suppress
+import logging as log
 
 from predicates import Predicate
 
 class ProcessDiscoveryService:
-    _names_to_skip = [
+    _names_to_skip = {
         'Registry',
         'LsaIso.exe',
         'MemCompression',
         'vmmem'
-    ]
+    }
 
     def __init__(self, predicates: list[Predicate], ignores: list[Predicate]):
         self._predicates = predicates
@@ -56,11 +55,15 @@ class ProcessDiscoveryService:
         return False
 
     def _should_be_included(self, process: psutil.Process):
-        with suppress(psutil.AccessDenied, psutil.NoSuchProcess):
+        try:
             return (
                 not self._should_be_skipped(process) and
                 self._is_matching(process) and
                 not self._is_ignored(process)
             )
+        except psutil.AccessDenied:
+            log.error(f'Access denied while matching process: {process}')
+        except psutil.NoSuchProcess:
+            pass
 
         return False

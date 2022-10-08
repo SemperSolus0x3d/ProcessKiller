@@ -1,3 +1,4 @@
+import logging as log
 from datetime import datetime
 from psutil import (
     Process,
@@ -12,15 +13,8 @@ class ProcessKillService:
         for process in processes:
             try:
                 process.kill()
-                self._report_kill(process.name())
+                log.info(f'Killed process: {process.name()}')
             except AccessDenied as ex:
-                print(f'ERROR: {format_exception_only(ex)[0]}')
+                log.error(f'Access denied while killing process: {process.name}')
             except NoSuchProcess:
                 pass
-
-    def _report_kill(self, process_name):
-        datetime_str = datetime.strftime(
-            datetime.now(), '%H:%M:%S.%f'
-        )
-
-        print(f'[{datetime_str}] Killed {process_name} process')

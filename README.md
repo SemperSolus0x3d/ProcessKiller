@@ -20,6 +20,7 @@ Currently, only by-name and by-commandline predicates are supported, but other p
 - Python 3.10.1+ (earlier versions are untested, but may work)
 - [toml](https://pypi.org/project/toml/)
 - [psutil](https://pypi.org/project/psutil/)
+- [inject](https://pypi.org/project/Inject/)
 
 ## License
 

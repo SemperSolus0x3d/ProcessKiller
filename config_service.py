@@ -1,5 +1,6 @@
 import re
 import toml
+import inject
 
 from config import Config
 from predicates_construction_service import PredicatesConstructionService
@@ -10,9 +11,13 @@ class ConfigService:
     config = Config()
     _raw_config = None
 
-    def __init__(self):
+    @inject.autoparams()
+    def __init__(
+        self,
+        predicate_construction_service: PredicatesConstructionService
+    ):
+        self._predicate_construction_service = predicate_construction_service
         self._raw_config = self._read_config()
-        self._predicate_construction_service = PredicatesConstructionService()
 
         self._validate_config()
         self._parse_interval()

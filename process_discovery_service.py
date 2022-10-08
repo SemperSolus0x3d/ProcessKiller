@@ -1,7 +1,7 @@
 import psutil
+import inject
 import logging as log
-
-from predicates import Predicate
+from config import Config
 
 class ProcessDiscoveryService:
     _names_to_skip = {
@@ -11,9 +11,10 @@ class ProcessDiscoveryService:
         'vmmem'
     }
 
-    def __init__(self, predicates: list[Predicate], ignores: list[Predicate]):
-        self._predicates = predicates
-        self._ignores = ignores
+    @inject.autoparams()
+    def __init__(self, config: Config):
+        self._predicates = config.predicates
+        self._ignores = config.ignores
 
     def get_matching_processes(self) -> list[psutil.Process]:
         processes = []

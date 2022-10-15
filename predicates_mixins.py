@@ -1,5 +1,5 @@
 import re
-from fnmatch import fnmatch
+import fnmatch
 from psutil import Process
 
 class ByNamePredicateMixin:
@@ -43,11 +43,6 @@ class RegexPredicateMixin:
     def _init_predicate_value(self, value):
         return re.compile(value)
 
-class GlobPatternPredicateMixin:
-    def match(self, process: Process):
-        value = self._get_value(process)
-        pred_value = self._get_predicate_value()
-        return fnmatch(value, pred_value)
-
+class GlobPatternPredicateMixin(RegexPredicateMixin):
     def _init_predicate_value(self, value):
-        return value
+        return re.compile(fnmatch.translate(value))

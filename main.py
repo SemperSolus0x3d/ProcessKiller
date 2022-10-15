@@ -8,6 +8,7 @@ from di_configurer import DIConfigurer
 from config import Config
 from process_kill_service import ProcessKillService
 from process_discovery_service import ProcessDiscoveryService
+from utils import log_execution_time
 
 class Program:
     @inject.autoparams()
@@ -25,10 +26,13 @@ class Program:
         interval = self._config.interval
 
         while True:
-            processes = self._process_discovery_service.get_matching_processes()
-            self._process_kill_service.kill_processes(processes)
-
+            self._run_iteration()
             time.sleep(interval)
+
+    @log_execution_time
+    def _run_iteration(self):
+        processes = self._process_discovery_service.get_matching_processes()
+        self._process_kill_service.kill_processes(processes)
 
 def configure_logging():
     log.basicConfig(

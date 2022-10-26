@@ -8,14 +8,13 @@ from predicates_construction_service import PredicatesConstructionService
 CONFIG_FILE = 'config.toml'
 
 class ConfigService:
-    config = Config()
-    _raw_config = None
-
     @inject.autoparams()
     def __init__(
         self,
         predicate_construction_service: PredicatesConstructionService
     ):
+        self.config = Config()
+
         self._predicate_construction_service = predicate_construction_service
         self._raw_config = self._read_config()
 

@@ -6,8 +6,6 @@ from psutil import (
     AccessDenied
 )
 
-from traceback import format_exception_only
-
 class ProcessKillService:
     def kill_processes(self, processes: list[Process]):
         for process in processes:

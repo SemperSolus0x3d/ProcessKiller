@@ -50,5 +50,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         log.info('Keyboard interrupt received. Exiting gracefully')
     except Exception as ex:
+        log.debug(f'{traceback.format_exc()}')
         log.critical(f'{traceback.format_exception_only(ex)}')
         input()

@@ -1,3 +1,4 @@
+from typing import Generator
 import psutil
 import inject
 import logging as log
@@ -21,17 +22,14 @@ class ProcessDiscoveryService:
         self._cache_service = cache_service
         self._iterations_passed = 0
 
-    def get_matching_processes(self) -> list[psutil.Process]:
-        processes = []
-
+    def get_matching_processes(self) -> Generator[psutil.Process, None, None]:
         for process in psutil.process_iter():
             with process.oneshot():
                 if self._should_be_included(process):
-                    processes.append(process)
+                    yield process
 
         self._evict_cache_if_needed()
         self._log_and_reset_cache_statistics()
-        return processes
 
     def _is_matching(self, process: psutil.Process):
         result = False

@@ -1,3 +1,4 @@
+from contextlib import suppress
 from typing import Generator
 import psutil
 import inject
@@ -74,18 +75,21 @@ class ProcessDiscoveryService:
         return False
 
     def _should_be_included(self, process: psutil.Process):
-        if self._should_be_skipped(process):
-            return False
+        with suppress(psutil.NoSuchProcess):
+            if self._should_be_skipped(process):
+                return False
 
-        cache_query_result = self._cache_service.query(process)
+            cache_query_result = self._cache_service.query(process)
 
-        if cache_query_result is not None:
-            return cache_query_result
+            if cache_query_result is not None:
+                return cache_query_result
 
-        match_result = self._match_predicates(process)
-        self._cache_service.update(process, match_result)
+            match_result = self._match_predicates(process)
+            self._cache_service.update(process, match_result)
 
-        return match_result
+            return match_result
+
+        return False
 
     def _evict_cache_if_needed(self):
         self._iterations_passed += 1
